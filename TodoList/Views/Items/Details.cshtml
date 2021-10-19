@@ -7,11 +7,11 @@
 <h2>Item Details</h2>
 <hr />
 <h3>@Html.DisplayNameFor(model => model.Description): @Html.DisplayFor(model => model.Description)</h3>
-@using (Html.BeginForm("Details", "Items"))
+@* @using (Html.BeginForm("Details", "Items"))
 {
-  @Html.CheckBoxFor(model => model.isComplete)
-  <input type="submit" value="save" class="btn btn-default" />
-}
+  @Html.CheckBoxFor(m => m.isComplete,false)
+  <input type="submit" value="done" class="btn btn-default" />
+} *@
 
 @if(@Model.JoinEntities.Count == 0)
 {

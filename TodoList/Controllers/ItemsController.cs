@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.SqlClient;
 
 namespace ToDoList.Controllers
 {
@@ -16,18 +17,42 @@ namespace ToDoList.Controllers
       _db = db;
     }
 
-    public ActionResult Index(int id, bool isComplete)
+    public ActionResult Index()
     {
-      var thisItem = _db.Items.FirstOrDefault(item => item.ItemId == id);
-      if(isComplete == true)
-        {
-            _db.Items.Remove(thisItem);
-            _db.SaveChanges();
-            // return View(thisItem);  
-        }
+      List <Item> items = new List<Item>();
       return View(_db.Items.ToList());
     }
-
+    // trying to add checkbox in a list code not working
+    [HttpPost, ActionName("Index")]
+    public ActionResult Index(bool isComplete, int id)
+    {
+      
+       var thisItem = _db.Items
+          .Include(item => item.JoinEntities)
+          .ThenInclude(join => join.Category)
+          .FirstOrDefault(item => item.ItemId == id);
+     
+      List <Item> items = _db.Items.ToList();
+        if (items.Count(x => x.isComplete) == 0)
+            {
+                return View();
+            }
+      else
+      {
+        foreach (Item i in items)
+        {
+          if(i.isComplete == true)
+          {
+            _db.Items.Remove(i);
+            _db.SaveChanges();
+          }  
+        }  
+      }
+   
+    _db.SaveChanges();
+    return View(thisItem);
+    }
+      /*---------------------------------------------------------*/   
     public ActionResult Create()
     {
       ViewBag.CategoryId = new SelectList(_db.Categories, "CategoryId", "Name");
